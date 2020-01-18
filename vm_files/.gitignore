@@ -1,0 +1,8 @@
+node_modules
+.tool-versions
+.elixir_ls
+Session.vim
+CHANGELOG.md
+.tmuxinator.yml
+.DS_Store
+.solargraph
