@@ -34,13 +34,12 @@ Vagrant.configure(2) do |config|
 
   config.vm.network 'private_network', type: 'dhcp'
 
-  config.vm.provision 'file', source: '~/.ssh', destination: '~/.ssh'
+  config.vm.provision 'file', source: '.ssh', destination: '~/.ssh'
   config.vm.provision 'file', source: '~/.gitconfig', destination: '~/.gitconfig'
   config.vm.provision 'file', source: '~/.gitignore', destination: '~/.gitignore'
   config.vm.provision 'file', source: './.custom.zsh', destination: '~/.custom.zsh'
 
-  config.vm.synced_folder "#{HOST_PATH}/Projects", "#{GUEST_PATH}/Projects"
-  config.vm.synced_folder "#{HOST_PATH}/DemoProjects", "#{GUEST_PATH}/DemoProjects"
+  config.vm.synced_folder "Projects", "#{GUEST_PATH}/Projects"
   config.vm.synced_folder "#{HOST_PATH}/vimwiki", "#{GUEST_PATH}/vimwiki"
   config.vm.synced_folder "#{HOST_PATH}/vimwiki_html", "#{GUEST_PATH}/vimwiki_html"
   config.vm.synced_folder "#{HOST_PATH}/scripts", "#{GUEST_PATH}/scripts"
