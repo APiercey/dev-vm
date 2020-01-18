@@ -39,11 +39,10 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'file', source: '~/.gitignore', destination: '~/.gitignore'
   config.vm.provision 'file', source: './.custom.zsh', destination: '~/.custom.zsh'
 
-  config.vm.synced_folder "Projects", "#{GUEST_PATH}/Projects"
-  config.vm.synced_folder "#{HOST_PATH}/vimwiki", "#{GUEST_PATH}/vimwiki"
-  config.vm.synced_folder "#{HOST_PATH}/vimwiki_html", "#{GUEST_PATH}/vimwiki_html"
-  config.vm.synced_folder "#{HOST_PATH}/scripts", "#{GUEST_PATH}/scripts"
-  config.vm.synced_folder "#{HOST_PATH}/.config/tmuxinator", "#{GUEST_PATH}/.config/tmuxinator"
+  config.vm.synced_folder 'vm_files/Projects', "#{GUEST_PATH}/Projects"
+  config.vm.synced_folder 'vm_files/vimwiki', "#{GUEST_PATH}/vimwiki"
+  config.vm.synced_folder 'vm_files/scripts', "#{GUEST_PATH}/scripts"
+  config.vm.synced_folder 'vm_files/tmuxinator', "#{GUEST_PATH}/.config/tmuxinator"
 
   # Sync dotfiles
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL

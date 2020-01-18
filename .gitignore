@@ -1,5 +1,8 @@
 .vagrant
-vm_files/.custom.zsh
-vm_files/provision_script.sh
+.custom.zsh
+provision_script.sh
 vm_files/.ssh/
 vm_files/Projects/
+vm_files/tmuxinator/
+vm_files/scripts/
+vm_files/vimwiki/
