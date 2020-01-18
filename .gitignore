@@ -6,3 +6,5 @@ vm_files/Projects/
 vm_files/tmuxinator/
 vm_files/scripts/
 vm_files/vimwiki/
+vm_files/.gitconfig
+vm_files/.gitignore
