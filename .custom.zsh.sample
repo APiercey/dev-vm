@@ -1,0 +1,2 @@
+# Use this as a basis for machine specific dotfiles setup, such as env vars, functions, etc.
+# mv .custom.zsh.sample .custom.zsh

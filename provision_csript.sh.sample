@@ -1,0 +1,2 @@
+# Use this as a basis for machine specific setup, such as installing a tool, post-boot Tmux sessions, etc
+# mv provision_script.sh.sample provision_script.sh
