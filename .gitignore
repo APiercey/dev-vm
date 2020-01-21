@@ -1,6 +1,7 @@
 .vagrant
 .custom.zsh
 provision_script.sh
+urls
 vm_files/.ssh/
 vm_files/Projects/
 vm_files/tmuxinator/

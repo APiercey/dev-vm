@@ -23,11 +23,12 @@ GUEST_PATH = "/home/#{VM_USER}".freeze
 Vagrant.configure(2) do |config|
   config.vm.box = VAGRANT_BOX
   config.vm.hostname = VM_NAME
+  config.vm.network 'forwarded_port', guest: 3306, host: 3306
 
   config.vm.provider 'virtualbox' do |v|
     v.name = VM_NAME
     v.memory = 4096
-    v.cpus = 4
+    v.cpus = 3
 
     v.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
   end
@@ -42,7 +43,11 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder 'vm_files/Projects', "#{GUEST_PATH}/Projects"
   config.vm.synced_folder 'vm_files/vimwiki', "#{GUEST_PATH}/vimwiki"
   config.vm.synced_folder 'vm_files/scripts', "#{GUEST_PATH}/scripts"
+  config.vm.synced_folder 'vm_files/bin', "#{GUEST_PATH}/bin"
   config.vm.synced_folder 'vm_files/tmuxinator', "#{GUEST_PATH}/.config/tmuxinator"
+  config.vm.synced_folder 'urls', "#{GUEST_PATH}/urls"
+
+  config.vm.provision 'shell', privileged: true, inline: 'chown -R vagrant:vagrant /home/vagrant/.config'
 
   # Sync dotfiles
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
@@ -80,17 +85,14 @@ Vagrant.configure(2) do |config|
     # Add terminfos
     tic ~/dotfiles/terminfos/xterm-256color-italic.terminfo
 
-    # Install vim-plug
-    curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
     # Install Bat
     curl -O -J -L https://github.com/sharkdp/bat/releases/download/v0.10.0/bat-musl_0.10.0_amd64.deb
     sudo dpkg -i bat-musl_0.10.0_amd64.deb
     rm bat-musl_0.10.0_amd64.deb
 
-    curl -0 -J -L https://github.com/concourse/concourse/releases/download/v5.8.0/fly-5.8.0-linux-amd64.tgz
-
+    # Install vim-plug
+    curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     # Install Ripgrep
     curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb
@@ -101,7 +103,7 @@ Vagrant.configure(2) do |config|
     sudo chsh -s $(which zsh) #{VM_USER}
   SHELL
 
-  config.vm.provision 'shell', privileged: true, path: './provision_script.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_script.sh'
 
   # Install ASDF
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
@@ -124,15 +126,16 @@ Vagrant.configure(2) do |config|
     asdf install python 2.7.17
     asdf install java adopt-openjdk-9+181
     asdf install ruby 2.6.5
-    asdf install elixir 1.9.1
-    asdf install erlang 22.0.7
+    # asdf install erlang 22.0.7
+    # asdf install elixir 1.9.1
 
     asdf global python 2.7.17 3.7.4
     asdf global java adopt-openjdk-9+181
     asdf global ruby 2.6.5
-    asdf global elixir 1.9.1
-    asdf global erlang 22.0.7
     asdf global nodejs 13.5.0
+    # asdf global elixir 1.9.1
+    # asdf global erlang 22.0.7
+
   SHELL
 
   # Plugins
@@ -157,7 +160,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
     sudo groupadd docker
 
-    sudo apt-get install \
+    sudo apt-get install -y \
       apt-transport-https \
       ca-certificates \
       curl \
@@ -167,11 +170,18 @@ Vagrant.configure(2) do |config|
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
     sudo add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
+      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) \
+      stable"
 
-    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    sudo apt-get install -y \
+      docker-ce \
+      docker-ce-cli \
+      containerd.io
+
+    # Docker Compose
+    sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
   SHELL
 
 end
