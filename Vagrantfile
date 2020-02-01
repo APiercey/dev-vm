@@ -78,7 +78,7 @@ Vagrant.configure(2) do |config|
       automake autoconf libreadline-dev \
       libncurses-dev libssl-dev libyaml-dev \
       libxslt-dev libffi-dev libtool unixodbc-dev \
-      bzip2 sqlite3 zip unzip
+      bzip2 sqlite3 zip unzip libsqlite3-dev
   SHELL
 
   # Non-ubuntu installations
