@@ -36,7 +36,6 @@ Vagrant.configure(2) do |config|
   config.vm.network 'private_network', type: 'dhcp'
 
   config.vm.provision 'file', source: 'vm_files/.ssh', destination: '~/.ssh'
-  config.vm.provision 'file', source: './vm_files/.git_template', destination: '~/.git_template'
   config.vm.provision 'file', source: 'vm_files/.gitconfig', destination: '~/.gitconfig'
   config.vm.provision 'file', source: 'vm_files/.gitignore', destination: '~/.gitignore'
   config.vm.provision 'file', source: 'vm_files/.custom.zsh', destination: '~/.custom.zsh'
