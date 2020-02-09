@@ -1,24 +1,25 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 # Box / OS
-VAGRANT_BOX = 'bento/ubuntu-18.04'.freeze
+VAGRANT_BOX = 'bento/ubuntu-18.04'
 
 # Memorable name for your
-VM_NAME = 'dev-vm'.freeze
+VM_NAME = 'dev-vm'
 
 # VM User - 'vagrant' by default
-VM_USER = 'vagrant'.freeze
+VM_USER = 'vagrant'
 
 # Username on your Mac
-MAC_USER = `whoami`.strip
+MAC_USER = `whoami`.strip.freeze
 
 # Host folder to sync
-HOST_PATH = "/Users/#{MAC_USER}".freeze
+HOST_PATH = "/Users/#{MAC_USER}"
 
 # Where to sync to on Guest - 'vagrant' is the default user name
-GUEST_PATH = "/home/#{VM_USER}".freeze
+GUEST_PATH = "/home/#{VM_USER}"
 
 Vagrant.configure(2) do |config|
   config.vm.box = VAGRANT_BOX
@@ -40,30 +41,21 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'file', source: 'vm_files/.gitignore', destination: '~/.gitignore'
   config.vm.provision 'file', source: 'vm_files/.custom.zsh', destination: '~/.custom.zsh'
 
+  # Setup Folders
   config.vm.synced_folder 'vm_files/Projects', "#{GUEST_PATH}/Projects"
   config.vm.synced_folder 'vm_files/vimwiki', "#{GUEST_PATH}/vimwiki"
   config.vm.synced_folder 'vm_files/scripts', "#{GUEST_PATH}/scripts"
   config.vm.synced_folder 'vm_files/bin', "#{GUEST_PATH}/bin"
   config.vm.synced_folder 'vm_files/tmuxinator', "#{GUEST_PATH}/.config/tmuxinator"
+
+  # Hack to open webpages
   config.vm.synced_folder 'urls', "#{GUEST_PATH}/urls"
 
-  config.vm.provision 'shell', privileged: true, inline: 'chown -R vagrant:vagrant /home/vagrant/.config'
+  # Set owner as non-root
+  config.vm.provision 'shell', privileged: true, inline: "chown -R #{VM_USER}:#{VM_USER} /home/vagrant/.config"
 
   # Sync dotfiles
-  config.vm.provision 'shell', privileged: false, inline: <<-SHELL
-    git clone --recurse-submodules git@github.com:APiercey/vimfiles.git || ( cd ~/vimfiles ; git pull )
-    ~/vimfiles/sync.sh
-
-    git clone --recurse-submodules git@github.com:APiercey/dotfiles.git || ( cd ~/dotfiles ; git pull )
-    ~/dotfiles/sync.sh
-
-    # Update/install Prezto Framework
-    cd ~/.zgen/sorin-ionescu/prezto-master
-    git pull
-    git submodule update --init --recursive
-    cd ~/
-
-  SHELL
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_dotfiles.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_fzf.sh'
 
   # Ubuntu installation
@@ -78,17 +70,16 @@ Vagrant.configure(2) do |config|
       bzip2 sqlite3 zip unzip libsqlite3-dev
   SHELL
 
-  # Non-ubuntu installations
-  config.vm.provision 'shell', privileged: false, inline: <<-SHELL
-    # Add terminfos
-    tic ~/dotfiles/terminfos/xterm-256color-italic.terminfo
+  # Set Shell
+  config.vm.provision 'shell', privileged: true, inline: "sudo chsh -s $(which zsh) #{VM_USER}"
 
-    # Set shell
-    sudo chsh -s $(which zsh) #{VM_USER}
-  SHELL
-
+  # Install Tools
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ripgrep.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_vim_plug.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_bat.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker_compose.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ctags.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_script.sh'
 
   # Install languages
@@ -116,8 +107,4 @@ Vagrant.configure(2) do |config|
     nvim +'PlugInstall --sync' +'PlugUpdate' +qa
     nvim +'CocInstall' +qa
   SHELL
-
-  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker.sh'
-  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker_compose.sh'
-  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ctags.sh'
 end
