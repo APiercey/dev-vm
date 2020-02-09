@@ -63,10 +63,8 @@ Vagrant.configure(2) do |config|
     git submodule update --init --recursive
     cd ~/
 
-    # Install FZF
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    yes n | ~/.fzf/install --completion --key-bindings --no-bash --no-fish # "yes n" disables whatever options that are not set
   SHELL
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_fzf.sh'
 
   # Ubuntu installation
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
@@ -85,58 +83,21 @@ Vagrant.configure(2) do |config|
     # Add terminfos
     tic ~/dotfiles/terminfos/xterm-256color-italic.terminfo
 
-    # Install Bat
-    curl -O -J -L https://github.com/sharkdp/bat/releases/download/v0.10.0/bat-musl_0.10.0_amd64.deb
-    sudo dpkg -i bat-musl_0.10.0_amd64.deb
-    rm bat-musl_0.10.0_amd64.deb
-
-    # Install vim-plug
-    curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-    # Install Ripgrep
-    curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb
-    sudo dpkg -i ripgrep_11.0.2_amd64.deb
-    rm ripgrep_11.0.2_amd64.deb
-
     # Set shell
     sudo chsh -s $(which zsh) #{VM_USER}
   SHELL
 
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ripgrep.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_bat.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_script.sh'
 
-  # Install ASDF
-  config.vm.provision 'shell', privileged: false, inline: <<-SHELL
-    # Source, as this is running in bash
-    source $HOME/.asdf/asdf.sh
-
-    # Add plugins
-    asdf plugin-add java https://github.com/halcyon/asdf-java.git
-    asdf plugin-add python
-    asdf plugin-add ruby
-    asdf plugin-add elixir
-    asdf plugin-add erlang
-    asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-
-    # NodeJS is special...
-    bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-    asdf install nodejs 13.5.0
-
-    asdf install python 3.7.4
-    asdf install python 2.7.17
-    asdf install java adopt-openjdk-9+181
-    asdf install ruby 2.6.5
-    # asdf install erlang 22.0.7
-    # asdf install elixir 1.9.1
-
-    asdf global python 2.7.17 3.7.4
-    asdf global java adopt-openjdk-9+181
-    asdf global ruby 2.6.5
-    asdf global nodejs 13.5.0
-    # asdf global elixir 1.9.1
-    # asdf global erlang 22.0.7
-
-  SHELL
+  # Install languages
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_java.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ruby.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_python.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_nodejs.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_erlang.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_elixir.sh'
 
   # Plugins
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
@@ -156,41 +117,7 @@ Vagrant.configure(2) do |config|
     nvim +'CocInstall' +qa
   SHELL
 
-  # Install docker
-  config.vm.provision 'shell', privileged: false, inline: <<-SHELL
-    sudo groupadd docker
-
-    sudo apt-get install -y \
-      apt-transport-https \
-      ca-certificates \
-      curl \
-      gnupg-agent \
-      software-properties-common
-
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-    sudo add-apt-repository \
-      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) \
-      stable"
-
-    sudo apt-get install -y \
-      docker-ce \
-      docker-ce-cli \
-      containerd.io
-
-    # Docker Compose
-    sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-  SHELL
-
-  # Setup Ctags
-  config.vm.provision 'shell', privileged: false, inline: <<-SHELL
-    git clone https://github.com/universal-ctags/ctags.git ~/ctags
-    cd ctags
-    ./autogen.sh
-    ./configure
-    make
-    sudo make install
-  SHELL
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker_compose.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ctags.sh'
 end
