@@ -1,10 +1,6 @@
-# fswatch -xn urls | while read file event; do
-#    ./url_opener.sh $file
-# done
-
 while IFS= read -r line; do
   if [ -f $line ]; then
       url=$(head -n 1 $line)
-      open $url
+      open $url &> /dev/null
   fi
 done <<< "$1"

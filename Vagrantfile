@@ -24,7 +24,6 @@ GUEST_PATH = "/home/#{VM_USER}"
 Vagrant.configure(2) do |config|
   config.vm.box = VAGRANT_BOX
   config.vm.hostname = VM_NAME
-  config.vm.network 'forwarded_port', guest: 3306, host: 3306
 
   config.vm.provider 'virtualbox' do |v|
     v.name = VM_NAME
@@ -49,7 +48,7 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder 'vm_files/tmuxinator', "#{GUEST_PATH}/.config/tmuxinator"
 
   # Hack to open webpages
-  config.vm.synced_folder 'urls', "#{GUEST_PATH}/urls"
+  config.vm.synced_folder 'urls', "#{GUEST_PATH}/urls" #, type: "nfs"
 
   # Set owner as non-root
   config.vm.provision 'shell', privileged: true, inline: "chown -R #{VM_USER}:#{VM_USER} /home/vagrant/.config"
@@ -87,8 +86,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ruby.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_python.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_nodejs.sh'
-  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_erlang.sh'
-  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_elixir.sh'
+  # config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_erlang.sh'
+  # config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_elixir.sh'
 
   # Plugins
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
