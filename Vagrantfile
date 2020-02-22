@@ -86,8 +86,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ruby.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_python.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_nodejs.sh'
-  # config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_erlang.sh'
-  # config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_elixir.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_erlang.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_elixir.sh'
 
   # Plugins
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
