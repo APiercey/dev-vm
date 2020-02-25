@@ -34,6 +34,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.network 'private_network', type: 'dhcp'
+  config.vm.network :forwarded_port, guest: 80, host: 8080
 
   config.vm.provision 'file', source: 'vm_files/.ssh', destination: '~/.ssh'
   config.vm.provision 'file', source: 'vm_files/.gitconfig', destination: '~/.gitconfig'
