@@ -67,7 +67,7 @@ Vagrant.configure(2) do |config|
       automake autoconf libreadline-dev \
       libncurses-dev libssl-dev libyaml-dev \
       libxslt-dev libffi-dev libtool unixodbc-dev \
-      bzip2 sqlite3 zip unzip libsqlite3-dev
+      bzip2 sqlite3 zip unzip libsqlite3-dev libpq-dev
   SHELL
 
   # Set Shell
@@ -94,7 +94,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, inline: <<-SHELL
     source $HOME/.asdf/asdf.sh
 
-    gem install bundler tmuxinator solargraph neovim
+    gem install bundler tmuxinator solargraph neovim gem-ctags
 
     pip install neovim
     pip3 install neovim
