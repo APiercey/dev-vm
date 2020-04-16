@@ -80,6 +80,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_docker_compose.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_ctags.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_dive.sh'
+  config.vm.provision 'shell', privileged: false, path: './provision_scripts/install_plantuml.sh'
   config.vm.provision 'shell', privileged: false, path: './provision_script.sh'
 
   # Install languages
